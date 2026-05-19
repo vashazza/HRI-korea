@@ -1,0 +1,75 @@
+input: (229, 101)
+
+━━━ WAI ━━━
+  features: ['doc_의사_전문의_per_100k', 'nur_간호사_간호사_per_100k', 'spe_내과_per_100k', 'spe_외과_per_100k', 'spe_응급의학과_per_100k', 'spe_소아청소년과_per_100k', 'spe_산부인과_per_100k']
+  PC1 explained variance: 78.5%
+  loadings:
+    +0.457  spe_내과_per_100k
+    +0.457  doc_의사_전문의_per_100k
+    +0.455  spe_산부인과_per_100k
+    +0.421  spe_외과_per_100k
+    +0.420  spe_소아청소년과_per_100k
+    +0.149  spe_응급의학과_per_100k
+    -0.000  nur_간호사_간호사_per_100k
+  TOP 5:
+    100.00  서울특별시 용산구
+    100.00  서울특별시 강남구
+    100.00  서울특별시 강서구
+    100.00  서울특별시 구로구
+    100.00  서울특별시 동작구
+  BOTTOM 5:
+      0.00  충청북도 충주시
+      0.00  충청북도 단양군
+      0.00  충청북도 괴산군
+      0.00  충청북도 영동군
+      0.00  충청북도 옥천군
+
+━━━ IAI ━━━
+  features: ['facilities_clinic_per_100k', 'facilities_hospital_per_100k', 'facilities_general_hospital_per_100k', 'facilities_tertiary_per_100k', 'facilities_health_center_per_100k', 'facilities_public_health_medical_per_100k', 'sr_수술실_병상수_per_100k', 'sr_분만실_병상수_per_100k', 'eq_전산화단층촬영장치_per_100k', 'eq_자기공명영상진단기_per_100k']
+  PC1 explained variance: 33.3%
+  loadings:
+    +0.506  eq_자기공명영상진단기_per_100k
+    +0.496  sr_수술실_병상수_per_100k
+    +0.446  eq_전산화단층촬영장치_per_100k
+    +0.342  facilities_clinic_per_100k
+    +0.229  sr_분만실_병상수_per_100k
+    +0.221  facilities_hospital_per_100k
+    +0.212  facilities_tertiary_per_100k
+    +0.106  facilities_general_hospital_per_100k
+    -0.100  facilities_public_health_medical_per_100k
+    -0.119  facilities_health_center_per_100k
+  TOP 5:
+    100.00  대구광역시 중구
+     94.28  서울특별시 강남구
+     82.73  광주광역시 동구
+     78.46  서울특별시 종로구
+     77.64  서울특별시 서초구
+  BOTTOM 5:
+      0.00  경상북도 울릉군
+      9.97  제주특별자치도 서귀포시
+     10.22  경상북도 영양군
+     10.24  경상북도 청송군
+     10.84  세종특별자치시 세종특별자치시
+
+━━━ DPI ━━━
+  features: ['aging_rate', 'extinction_index_inverted', 'medical_aid_recipient_rate', 'claims_cost_per_capita']
+  PC1 explained variance: 80.5%
+  loadings:
+    +0.541  aging_rate
+    +0.539  claims_cost_per_capita
+    +0.511  extinction_index_inverted
+    +0.395  medical_aid_recipient_rate
+  TOP 5:
+    100.00  경상북도 의성군
+     99.20  전라남도 고흥군
+     98.54  경상남도 합천군
+     97.80  대구광역시 군위군
+     97.29  경상북도 영덕군
+  BOTTOM 5:
+      0.00  경기도 화성시
+      1.25  세종특별자치시 세종특별자치시
+      2.76  경기도 과천시
+      4.58  대전광역시 유성구
+      4.69  경기도 오산시
+
+saved → /Users/vashazza/Desktop/00_Univ/2026/05_의과학의현재와미래/data/processed/master_with_indices.csv

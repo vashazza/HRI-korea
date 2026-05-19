@@ -1,0 +1,31 @@
+[project]
+name = "regional-healthcare-hri"
+version = "0.1.0"
+description = "Regional Healthcare Restoration Index (HRI) for South Korean SGG"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "scikit-learn>=1.3",
+    "scipy>=1.11",
+    "statsmodels>=0.14",
+    "matplotlib>=3.7",
+    "seaborn>=0.13",
+    "openpyxl>=3.1",
+    "tqdm>=4.66",
+    "jupyter>=1.0",
+    "ipykernel>=6.29",
+]
+
+[project.optional-dependencies]
+geo = [
+    "geopandas>=0.14",
+    "folium>=0.16",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

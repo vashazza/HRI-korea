@@ -1,0 +1,32 @@
+pop: 229  unique keys: 229
+
+duplicate sgg names across sido: 7 sgg (29 rows)
+        sido  sgg          key
+108    부산광역시  강서구    부산광역시|강서구
+127    서울특별시  강서구    서울특별시|강서구
+1    강원특별자치도  고성군  강원특별자치도|고성군
+51      경상남도  고성군     경상남도|고성군
+111    부산광역시   남구     부산광역시|남구
+95     대구광역시   남구     대구광역시|남구
+150    울산광역시   남구     울산광역시|남구
+90     광주광역시   남구     광주광역시|남구
+158    인천광역시   동구     인천광역시|동구
+151    울산광역시   동구     울산광역시|동구
+112    부산광역시   동구     부산광역시|동구
+91     광주광역시   동구     광주광역시|동구
+98     대구광역시   동구     대구광역시|동구
+104    대전광역시   동구     대전광역시|동구
+99     대구광역시   북구     대구광역시|북구
+92     광주광역시   북구     광주광역시|북구
+152    울산광역시   북구     울산광역시|북구
+115    부산광역시   북구     부산광역시|북구
+93     광주광역시   서구     광주광역시|서구
+105    대전광역시   서구     대전광역시|서구
+
+=== unmet_care: rows=229, in pop but missing here=0, extra here not in pop=0
+
+=== medical_aid: rows=229, in pop but missing here=0, extra here not in pop=0
+
+=== outflow: rows=229, in pop but missing here=0, extra here not in pop=0
+
+=== facilities: rows=229, in pop but missing here=0, extra here not in pop=0
