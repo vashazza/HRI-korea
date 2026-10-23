@@ -9,7 +9,7 @@ import pytest
 from hri import paths
 from hri.hri import HRIWeights, compute_hri, compute_hri_raw
 from hri.indices import fit_indices, transform_indices
-from hri.simulation import apply_scenario
+from hri.simulation import _bottom_30_mask, apply_scenario
 
 
 @pytest.fixture(scope="module")
@@ -71,7 +71,16 @@ def test_scenario_does_not_refit(setup, scenario):
 def test_s1_touches_only_bottom_30pct_wai(setup):
     master, base, fits, w, lo, hi = setup
     r = apply_scenario(master, base, fits, w, "S1", lo, hi)
-    targeted = (base["wai"] < base["wai"].quantile(0.30)).to_numpy()
+    targeted = _bottom_30_mask(base["wai"]).to_numpy()
     delta = r.df["delta_hri"].to_numpy()
     assert np.all(delta[~targeted] == 0)
     assert np.all(delta[targeted] >= 0)
+
+
+@pytest.mark.parametrize("scenario", ["S1", "S3"])
+def test_province_level_targets_are_not_split(setup, scenario):
+    # WAI·장비는 시·도 값을 인구비례로 나눈 것이라 같은 시·도는 함께 대상이 되거나 함께 빠져야 한다
+    master, base, fits, w, lo, hi = setup
+    r = apply_scenario(master, base, fits, w, scenario, lo, hi)
+    per_sido = r.df.groupby("sido")["treated"].agg(["min", "max"])
+    assert (per_sido["min"] == per_sido["max"]).all(), per_sido[per_sido["min"] != per_sido["max"]]

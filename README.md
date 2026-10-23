@@ -48,7 +48,7 @@ make reproduce   # = hri reproduce : indices → model → cluster → simulate 
 make test
 ```
 
-커밋된 `data/processed/*.csv`·`reports/hri_weights.json`과 바이트 단위로 같은 결과가 다시 나온다. (`docs/index.html`은 Folium이 빌드마다 요소 ID를 새로 붙여서 그 부분만 달라진다.)
+같은 환경에서는 커밋된 `data/processed/*.csv`·`reports/hri_weights.json`과 바이트 단위로 같은 결과가 나온다. 수치 라이브러리(BLAS) 빌드가 다르면 마지막 자리 부동소수점만 달라지므로, CI는 새 환경에서 재실행한 결과를 `scripts/check_reproduced.py`로 커밋본과 허용오차 1e-9로 비교한다. (`docs/index.html`은 Folium이 빌드마다 요소 ID를 새로 붙여서 그 부분만 달라진다.)
 
 **원자료부터 전부.** 원자료 목록·출처·기준시점·SHA256은 [`data/raw/MANIFEST.yaml`](data/raw/MANIFEST.yaml)에 있다.
 
@@ -73,9 +73,9 @@ make full        # = hri run-all    : check-data → preprocess → reproduce
 
 | 시나리오 (대상: 해당 지표 하위 30%) | 농촌·고령 | 중간도시 | 수도권·거점 |
 |---|---:|---:|---:|
-| S1 필수 5과 전문의 +10% | +1.47 | +0.79 | 0.00 |
+| S1 필수 5과 전문의 +10% | +0.96 | +0.60 | 0.00 |
 | S2 의원 +5개 | +0.18 | +0.07 | 0.00 |
-| S3 CT·MRI 각 +1대 | +2.92 | +1.51 | 0.00 |
+| S3 CT·MRI 각 +1대 | +2.92 | +1.02 | 0.00 |
 | S4 보건의료원 없는 곳에 신설 | −0.80 | −0.26 | −0.19 |
 
 수도권·거점형이 S1~S3에서 0인 것은 하위 30%에 해당하는 곳이 없어서다. S4가 음수인 이유는 아래 Limitations 6번.

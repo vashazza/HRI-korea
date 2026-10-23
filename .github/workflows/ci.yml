@@ -20,3 +20,5 @@ jobs:
         run: python -m pytest -q
       - name: Re-run pipeline from committed data (no raw data needed)
         run: python -m hri.cli reproduce
+      - name: Reproduced outputs match committed ones
+        run: python scripts/check_reproduced.py
