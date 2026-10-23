@@ -116,7 +116,7 @@ xs = np.linspace(hri_df["hri"].min(), hri_df["hri"].max(), 100)
 ax.plot(xs, np.polyval(z, xs), "k--", lw=1.5, alpha=0.6, label=f"OLS y = {z[0]:+.4f}x + {z[1]:.3f}")
 
 r = hri_df[["hri", "outflow_cost_ratio"]].corr().iloc[0, 1]
-ax.set_xlabel("HRI (복원력 지수)")
+ax.set_xlabel("HRI (의료 복원 지수)")
 ax.set_ylabel("관외 의료이용률 (cost 기준)")
 ax.set_title(f"HRI vs 관외 의료이용률  (Pearson r = {r:.3f})")
 ax.legend(loc="upper right", frameon=False)

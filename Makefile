@@ -1,50 +1,28 @@
-# HRI 파이프라인
-#   make reproduce  원자료 없이, 커밋된 data/processed/master_dataset.csv 에서 끝까지 재실행
-#   make full       원자료(data/raw)가 있을 때: 검사 → 전처리 → reproduce
-#   make test       pytest
-#   make map        인터랙티브 지도(docs/index.html)만 다시 생성
+# HRI 파이프라인 — 단계 정의는 src/hri/cli.py 한 곳에 있다.
+#   make reproduce   원자료 없이, 커밋된 data/processed/master_dataset.csv 에서 끝까지 재실행
+#   make full        원자료(data/raw)가 있을 때: 검사 → 전처리 → reproduce
+#   make check_data  원자료 존재·해시 검사
+#   make map         인터랙티브 지도(docs/index.html)만 다시 생성
+#   make test        pytest
 #
 # 다른 인터프리터를 쓰려면: make reproduce PYTHON=/path/to/python
 
 PYTHON ?= python
-export PYTHONPATH := src
+HRI := PYTHONPATH=src $(PYTHON) -m hri.cli
 
-GEOJSON := data/geo/skorea_sgg.geojson
-GEOJSON_URL := https://raw.githubusercontent.com/southkorea/southkorea-maps/master/kostat/2013/json/skorea_municipalities_geo_simple.json
+.PHONY: reproduce full check_data map test
 
-.PHONY: reproduce full check_data preprocess indices hri clustering simulation figures map test
+reproduce:
+	$(HRI) reproduce
 
-reproduce: indices hri clustering simulation figures map
-
-full: check_data preprocess reproduce
+full:
+	$(HRI) run-all
 
 check_data:
-	$(PYTHON) -m hri.check_data
+	$(HRI) check-data
 
-preprocess:
-	$(PYTHON) -m hri.preprocess
-
-indices:
-	$(PYTHON) -m hri.indices
-
-hri:
-	$(PYTHON) -m hri.hri
-
-clustering:
-	$(PYTHON) -m hri.clustering
-
-simulation:
-	$(PYTHON) -m hri.simulation
-
-figures:
-	$(PYTHON) notebooks/05_visualize.py
-
-map: $(GEOJSON)
-	$(PYTHON) notebooks/06_build_map.py
-
-$(GEOJSON):
-	mkdir -p $(dir $@)
-	curl -fsSL -o $@ $(GEOJSON_URL)
+map:
+	$(HRI) map
 
 test:
-	$(PYTHON) -m pytest -q
+	PYTHONPATH=src $(PYTHON) -m pytest -q

@@ -109,14 +109,16 @@ def main():
             print(f"  {s} | {n}")
 
     # ── 지도 생성 ──
-    m = folium.Map(location=[36.5, 127.8], zoom_start=7, tiles="CartoDB positron")
+    # 배경 타일 없이 시·군·구 폴리곤만 그린다 (CARTO 타일은 API 키를 요구하게 바뀌어 워터마크가 뜸)
+    m = folium.Map(location=[36.5, 127.8], zoom_start=7, tiles=None)
+    m.get_root().header.add_child(folium.Element("<style>.leaflet-container{background:#f4f6f8 !important}</style>"))
 
     # 컬러맵
     hri_vals = [ft["properties"].get("hri") for ft in geo["features"] if "hri" in ft["properties"]]
     hri_min, hri_max = min(hri_vals), max(hri_vals)
     colormap = cm.LinearColormap(
         colors=["#cb181d", "#fb6a4a", "#fdae6b", "#fee08b", "#a6d96a", "#1a9850"],
-        vmin=hri_min, vmax=hri_max, caption="HRI 점수 (높을수록 의료 복원력 ↑)",
+        vmin=hri_min, vmax=hri_max, caption="HRI 점수 (높을수록 의료 복원 수준 ↑)",
     )
 
     def style_function(feature):

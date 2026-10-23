@@ -4,7 +4,7 @@
 설계:
     unmet_std_pct ~ β_w·WAI + β_i·IAI + β_d·DPI + ε
 LASSO 5-fold CV로 β 추정 → 절대값 기반 비례 가중치로 환산
-HRI_i = w_w·WAI + w_i·IAI − w_d·DPI  (값이 높을수록 복원력 ↑)
+HRI_i = w_w·WAI + w_i·IAI − w_d·DPI  (값이 높을수록 복원 수준 ↑)
 """
 
 from __future__ import annotations
@@ -88,7 +88,7 @@ def compute_hri(
     df: pd.DataFrame, w: HRIWeights,
     baseline_min: float | None = None, baseline_max: float | None = None,
 ) -> pd.Series:
-    """HRI = w_w·WAI + w_i·IAI − w_d·DPI, 0-100 정규화. 값↑ = 복원력↑.
+    """HRI = w_w·WAI + w_i·IAI − w_d·DPI, 0-100 정규화. 값↑ = 복원 수준↑.
     baseline_min/max를 주면 그 범위로 정규화 (시뮬레이션 비교용).
     """
     raw = compute_hri_raw(df, w)
@@ -194,10 +194,10 @@ if __name__ == "__main__":
     print("━━━ HRI face validity ━━━")
     label = df["sido"] + " " + df["sgg"]
     sr = df["hri"].copy(); sr.index = label
-    print("TOP 10 (복원력 ↑):")
+    print("TOP 10 (복원 수준 ↑):")
     for k, v in sr.nlargest(10).items():
         print(f"  {v:6.2f}  {k}")
-    print("BOTTOM 10 (복원력 ↓):")
+    print("BOTTOM 10 (복원 수준 ↓):")
     for k, v in sr.nsmallest(10).items():
         print(f"  {v:6.2f}  {k}")
     print()
