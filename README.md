@@ -37,16 +37,23 @@ tests/
 
 ## 실행
 
-원본 데이터를 `data/raw/`에 배치한 뒤:
+```bash
+pip install -r requirements.txt && pip install -e . --no-deps
+```
+
+**원자료 없이 돌려보기 (권장)** — 원자료는 라이선스·용량 문제로 레포에 없다. 대신 전처리 결과인 `data/processed/master_dataset.csv`가 커밋되어 있어, 그 이후 단계는 누구나 그대로 재실행할 수 있다.
 
 ```bash
-python -m hri.preprocess        # master_dataset.csv
-python -m hri.indices           # WAI/IAI/DPI
-python -m hri.hri               # HRI + 검증
-python -m hri.clustering        # 클러스터
-python -m hri.simulation        # 시나리오 ΔHRI
-python notebooks/05_visualize.py
-python notebooks/06_build_map.py
+make reproduce   # indices → hri → clustering → simulation → figures → map
+```
+
+커밋된 `data/processed/*.csv`·`reports/hri_weights.json`과 바이트 단위로 같은 결과가 다시 나온다. (`docs/index.html`은 Folium이 빌드마다 요소 ID를 새로 붙여서 그 부분만 달라진다.)
+
+**원자료부터 전부** — 원자료 목록·출처·SHA256은 [`data/raw/MANIFEST.yaml`](data/raw/MANIFEST.yaml)에 있다.
+
+```bash
+make check_data  # 원자료 존재·해시 검사, 누락 파일은 받는 곳 안내
+make full        # check_data → preprocess → reproduce
 ```
 
 ## 산출물

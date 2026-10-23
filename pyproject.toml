@@ -12,6 +12,8 @@ dependencies = [
     "matplotlib>=3.7",
     "seaborn>=0.13",
     "openpyxl>=3.1",
+    "lxml>=5.0",
+    "pyyaml>=6.0",
     "tqdm>=4.66",
     "jupyter>=1.0",
     "ipykernel>=6.29",
@@ -21,6 +23,9 @@ dependencies = [
 geo = [
     "geopandas>=0.14",
     "folium>=0.16",
+]
+dev = [
+    "pytest>=8.0",
 ]
 
 [build-system]

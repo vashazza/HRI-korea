@@ -1,0 +1,13 @@
+# 파이프라인·지도·테스트 실행에 필요한 패키지의 고정 버전 (Python 3.11에서 검증)
+#   pip install -r requirements.txt && pip install -e . --no-deps
+pandas==2.2.3
+numpy==2.4.6
+scikit-learn==1.8.0
+scipy==1.17.1
+matplotlib==3.10.9
+openpyxl==3.1.5
+lxml==6.1.0
+PyYAML==6.0.3
+folium==0.20.0
+branca==0.8.2
+pytest==9.1.1

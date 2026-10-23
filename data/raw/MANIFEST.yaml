@@ -1,0 +1,311 @@
+# 원자료 매니페스트 — src/hri/paths.py 의 원자료 상수와 1:1 대응한다.
+# 검사: python -m hri.check_data   (존재·SHA256 확인, 누락 시 출처 안내)
+#
+# 필드
+#   key               paths.py 상수명 (dict 상수는 KEY[권역])
+#   path              data/raw/ 기준 상대경로
+#   used              preprocess 파이프라인이 실제로 읽는지 (false면 누락돼도 실패하지 않음)
+#   org / source      출처 기관 / 수록 통계·포털
+#   table_name        다운로드 화면의 통계표명 (파일 헤더 기준)
+#   table_id          통계표 ID. 확인하지 못한 값은 null (추측해서 채우지 않음)
+#   url               다운로드 경로 (통계표 직링크를 확인하지 못한 경우 포털 주소)
+#   downloaded        다운로드 날짜 (파일 생성일 기준)
+#   reference_period  자료의 기준 시점 (파일 내부 표기 기준)
+#   sha256            파일 해시
+#
+# 주의: HIRA 공급측 자료(인력·전문의·시설·장비·특수진료실)는 2026년 1분기 기준이고,
+#       수요·결과측 자료(인구·미충족의료·관외이용·의료급여)는 2024년 기준이다.
+
+version: 1
+
+files:
+  # ── HIRA 보건의료빅데이터개방시스템 ─────────────────────────────
+  - key: HIRA_FACILITIES
+    path: hira/01_facilities_by_region.xlsx
+    used: true
+    org: 건강보험심사평가원 (HIRA)
+    source: 보건의료빅데이터개방시스템 > 의료통계정보
+    table_name: 기관수현황_지역별종별요양기관수현황(단위_개소)
+    table_id: null
+    url: https://opendata.hira.or.kr
+    downloaded: 2026-05-19
+    reference_period: 2026Q1
+    unit: 시·군·구 × 요양기관종별
+    sha256: 554f436bba6004e83d10f11deb3327425bae5894c0dd9ee4ed53756ec0aa5acd
+
+  - key: HIRA_SPECIALISTS
+    path: hira/02_specialists_by_region.xlsx
+    used: true
+    org: 건강보험심사평가원 (HIRA)
+    source: 보건의료빅데이터개방시스템 > 의료통계정보
+    table_name: 지역별종별_전문과목별전문의수(단위_명)
+    table_id: null
+    url: https://opendata.hira.or.kr
+    downloaded: 2026-05-19
+    reference_period: 2026Q1
+    unit: 시·도 × 요양기관종별 × 전문과목
+    sha256: 8655476b4eee7302712739bc1785902b7fa15d99e33a31ee484c60eb61bbf334
+
+  - key: HIRA_DOCTORS
+    path: hira/03_doctors_by_regions.xlsx
+    used: true
+    org: 건강보험심사평가원 (HIRA)
+    source: 보건의료빅데이터개방시스템 > 의료통계정보
+    table_name: 지역별종별_의료인력현황_의사등(단위_명)
+    table_id: null
+    url: https://opendata.hira.or.kr
+    downloaded: 2026-05-19
+    reference_period: 2026Q1
+    unit: 시·도 × 요양기관종별
+    sha256: 19cd6c1611b0e0e5d2fe39b94dad08b7ef0ec34e4e5aa0d1bac7683a04772fa5
+
+  - key: HIRA_NURSES
+    path: hira/03_nurses_by_region.xlsx
+    used: true
+    org: 건강보험심사평가원 (HIRA)
+    source: 보건의료빅데이터개방시스템 > 의료통계정보
+    table_name: 지역별종별_의료인력현황_간호사등(단위_명)
+    table_id: null
+    url: https://opendata.hira.or.kr
+    downloaded: 2026-05-19
+    reference_period: 2026Q1
+    unit: 시·도 × 요양기관종별
+    sha256: 659c86a3758492e42e26d3bccdb20cc9a3e846d1c3941a8d3c3989774f846ff4
+
+  - key: HIRA_CLAIMS
+    path: hira/04_claims_by_disease_region.csv
+    used: false
+    org: 건강보험심사평가원 (HIRA)
+    source: 보건의료빅데이터개방시스템 > 의료통계정보
+    table_name: 지역별 의료기관종별 진료현황 (상병코드 없음)
+    table_id: null
+    url: https://opendata.hira.or.kr
+    downloaded: 2026-05-19
+    reference_period: "2024"
+    unit: 시·도 × 의료기관종별
+    sha256: e5d17c2a72f2d3ef62ae9e9cbb382b444c8c1d60d6f83597956173d086250564
+
+  - key: HIRA_RESOURCES
+    path: hira/05_resources_per_population.csv
+    used: false
+    org: 건강보험심사평가원 (HIRA)
+    source: 보건의료빅데이터개방시스템
+    table_name: 의료자원대비인구 기준수 (자원별 표준화 분모)
+    table_id: null
+    url: https://opendata.hira.or.kr
+    downloaded: 2026-05-19
+    reference_period: null
+    unit: 자원구분코드
+    sha256: f82378043192a3995ff67aff928f73e2f00d0e64b4f926b33d1c70d0120b29cc
+
+  - key: HIRA_SPECIAL_ROOMS
+    path: hira/06_special_treatment_rooms.xlsx
+    used: true
+    org: 건강보험심사평가원 (HIRA)
+    source: 보건의료빅데이터개방시스템 > 의료통계정보
+    table_name: 지역별종별_특수진료실현황(단위_실, 개)
+    table_id: null
+    url: https://opendata.hira.or.kr
+    downloaded: 2026-05-19
+    reference_period: 2026Q1
+    unit: 시·도 × 요양기관종별
+    sha256: ea64b405213bd5a49a91d20591d84e048ed3900311f6720ea442333e8e00077f
+
+  - key: HIRA_EQUIPMENT
+    path: hira/07_medical_equipment.xlsx
+    used: true
+    org: 건강보험심사평가원 (HIRA)
+    source: 보건의료빅데이터개방시스템 > 의료통계정보
+    table_name: 의료장비현황(단위_대)
+    table_id: null
+    url: https://opendata.hira.or.kr
+    downloaded: 2026-05-19
+    reference_period: 2026Q1
+    unit: 시·도 × 요양기관종별
+    sha256: 399624be5941aa90bde13521498781e998c8384e58fece48d1485ac2f33e5641
+
+  # ── KOSIS 국가통계포털 ─────────────────────────────────────────
+  - key: KOSIS_DEATH
+    path: KOSIS/사망원인 50항목 1998.csv
+    used: false
+    org: 통계청
+    source: KOSIS > 사망원인통계
+    table_name: 사망원인(50항목)/성/시군구별 사망자수, 사망률, 연령표준화 사망률 (실제로는 시·도 단위만 수록)
+    table_id: null
+    url: https://kosis.kr
+    downloaded: 2026-05-19
+    reference_period: "2024"
+    unit: 시·도 × 사망원인 50항목 × 성
+    sha256: b3c360ea9bb380b8da81f69ac77cd6b38789a40b6d01a403ab78468d5d3f435f
+
+  - key: POPULATION_OLD
+    path: new/2023 주민등록 인구.csv
+    used: false
+    org: 행정안전부
+    source: KOSIS > 주민등록인구현황
+    table_name: 행정구역(시군구)별/성별/연령별 주민등록인구 (시·도까지만 펼친 버전, POPULATION으로 대체)
+    table_id: null
+    url: https://kosis.kr
+    downloaded: 2026-05-19
+    reference_period: 2023-2025
+    unit: 시·도 × 성 × 5세 연령
+    sha256: 5102e01e51fb0999985e032563d868616e08aeae5c9875eb9baf4ddf4baa6456
+
+  - key: POPULATION
+    path: new/101_DT_1B04005N_20260519220446.xls
+    used: true
+    org: 행정안전부
+    source: KOSIS > 주민등록인구현황
+    table_name: 행정구역(읍면동)별/5세별 주민등록인구(2011년~)
+    table_id: DT_1B04005N   # orgId=101 (파일명 기준)
+    url: https://kosis.kr/statHtml/statHtml.do?orgId=101&tblId=DT_1B04005N
+    downloaded: 2026-05-19
+    reference_period: "2024"   # 파일에는 2026.02~04월과 2024년 열이 함께 있음; 2024년 열만 사용
+    unit: 시·군·구 × 5세 연령 × 성
+    format: SpreadsheetML 2003 XML (확장자만 .xls)
+    sha256: 5ef3b57148dec80147686e7a30b7416ecc3ede9defe7a28fbb4d5775c9e67ad2
+
+  - key: WELFARE
+    path: new/복지사업 수급권자 현황 2024.csv
+    used: true
+    org: null   # 출처 기관 미기록 — 확인 필요
+    source: 복지사업 수급권자 현황 (사업명·기준년월·시도·시군구·수급권자수·수급가구수)
+    table_name: 복지사업 수급권자 현황
+    table_id: null
+    url: null
+    downloaded: 2026-05-19
+    reference_period: 2024-12
+    unit: 시·군·구 × 사업명 (기초의료급여만 사용)
+    sha256: 76daf3d060746bb569e1bc173bfbc52774e98a86aa7f1eadefeb0677a1f1fbc3
+
+  - key: UNMET_CARE
+    path: new/시군구 연간 미충족 의료율.csv
+    used: true
+    org: 질병관리청
+    source: KOSIS > 지역사회건강조사
+    table_name: 시군구별 연간 미충족 의료율
+    table_id: null
+    url: https://kosis.kr
+    downloaded: 2026-05-19
+    reference_period: "2024"
+    unit: 시·군·구 (응답자수·조율·표준화율)
+    sha256: ea795dda41ee00a835070bcc19829bb1a5924198ae832a752ca9f349e0d9514a
+
+  - key: PUBLIC_HOSPITAL_STAFF
+    path: new/시도별 공공의료기관 인력 현황 2026.csv
+    used: false
+    org: null   # 출처 기관 미기록 — 확인 필요
+    source: KOSIS > 공공보건의료 통계
+    table_name: 시도별 공공의료기관 인력 현황
+    table_id: null
+    url: https://kosis.kr
+    downloaded: 2026-05-19
+    reference_period: "2024"
+    unit: 시·도 × 직종
+    sha256: 0b70e730c9b5d98fe42ea9c6140155acefe042977ceb6b59423c86b8d00d5c0e
+
+  # 관내(거주지 시·군·구 안에서 받은 진료) — 4개 권역으로 나눠 받음
+  - key: INPATIENT_FILES[서울·인천·경기·강원]
+    path: new/서울 인천 경기 강원 진료현황 전체 2026-05-19.csv
+    used: true
+    org: 국민건강보험공단·건강보험심사평가원
+    source: KOSIS > 지역별 의료이용 통계 (거주지 기준)
+    table_name: 시군구별 관내 진료현황 (전체)
+    table_id: null
+    url: https://kosis.kr
+    downloaded: 2026-05-19
+    reference_period: "2024"
+    unit: 시·군·구
+    sha256: bcee7299fdb551a4065c828030061a8dc7d67052618ad6ee8a7fc18a04a5105b
+
+  - key: INPATIENT_FILES[대전·세종·충북·충남]
+    path: new/시군구_대전_세종_충북_충남_별_관내_진료현황전체_20260519173640.csv
+    used: true
+    org: 국민건강보험공단·건강보험심사평가원
+    source: KOSIS > 지역별 의료이용 통계 (거주지 기준)
+    table_name: 시군구별 관내 진료현황 (전체)
+    table_id: null
+    url: https://kosis.kr
+    downloaded: 2026-05-19
+    reference_period: "2024"
+    unit: 시·군·구
+    sha256: e03c1e839afd126aba4ccfd8a354a1c60dcbbb1f5ad2f91d98f632111f27a28b
+
+  - key: INPATIENT_FILES[부산·대구·울산·경북·경남]
+    path: new/시군구_부산_대구_울산_경북_경남_별_관내_진료현황전체_20260519173733.csv
+    used: true
+    org: 국민건강보험공단·건강보험심사평가원
+    source: KOSIS > 지역별 의료이용 통계 (거주지 기준)
+    table_name: 시군구별 관내 진료현황 (전체)
+    table_id: null
+    url: https://kosis.kr
+    downloaded: 2026-05-19
+    reference_period: "2024"
+    unit: 시·군·구
+    sha256: 9a6d3ff7bcefb606566f8cf30d162c3aa55ea370ba4ef386fae07f7ad2ae8937
+
+  - key: INPATIENT_FILES[광주·전북·전남·제주]
+    path: new/시군구_광주_전북_전남_제주_별_관내_진료현황전체_20260519173708.csv
+    used: true
+    org: 국민건강보험공단·건강보험심사평가원
+    source: KOSIS > 지역별 의료이용 통계 (거주지 기준)
+    table_name: 시군구별 관내 진료현황 (전체)
+    table_id: null
+    url: https://kosis.kr
+    downloaded: 2026-05-19
+    reference_period: "2024"
+    unit: 시·군·구
+    sha256: 4fbcb9696df11ea63fd74d8cb772ef1ab12e15a4c2b67408759a57fd236ff671
+
+  # 관외(거주지 시·군·구 밖에서 받은 진료)
+  - key: OUTPATIENT_FILES[서울·인천·경기·강원]
+    path: new/시군구_서울_인천_경기_강원_별_관외_진료현황전체_20260519173624.csv
+    used: true
+    org: 국민건강보험공단·건강보험심사평가원
+    source: KOSIS > 지역별 의료이용 통계 (거주지 기준)
+    table_name: 시군구별 관외 진료현황 (전체)
+    table_id: null
+    url: https://kosis.kr
+    downloaded: 2026-05-19
+    reference_period: "2024"
+    unit: 시·군·구
+    sha256: 27ac245f8ce94a2974a5850b09f3c8dda8f8a389425841cc4c5ea08ff5e68655
+
+  - key: OUTPATIENT_FILES[대전·세종·충북·충남]
+    path: new/대전 세종 충북 충남 관외 진료현황 전체 2026-05-19.csv
+    used: true
+    org: 국민건강보험공단·건강보험심사평가원
+    source: KOSIS > 지역별 의료이용 통계 (거주지 기준)
+    table_name: 시군구별 관외 진료현황 (전체)
+    table_id: null
+    url: https://kosis.kr
+    downloaded: 2026-05-19
+    reference_period: "2024"
+    unit: 시·군·구
+    sha256: 06a233a258ec4ae98bc9b00708c6324f2a33d794e8101a6273c3aa0183c8ecf0
+
+  - key: OUTPATIENT_FILES[부산·대구·울산·경북·경남]
+    path: new/부산 대구 울산 경북 경남 관외 진료현황 전체 2026.csv
+    used: true
+    org: 국민건강보험공단·건강보험심사평가원
+    source: KOSIS > 지역별 의료이용 통계 (거주지 기준)
+    table_name: 시군구별 관외 진료현황 (전체)
+    table_id: null
+    url: https://kosis.kr
+    downloaded: 2026-05-19
+    reference_period: "2024"
+    unit: 시·군·구
+    sha256: b273da465617d181605a95709cc85b162bad945843380dbc69bf55551aa1f493
+
+  - key: OUTPATIENT_FILES[광주·전북·전남·제주]
+    path: new/관외 진료현황 전체 2026-05-19.csv
+    used: true
+    org: 국민건강보험공단·건강보험심사평가원
+    source: KOSIS > 지역별 의료이용 통계 (거주지 기준)
+    table_name: 시군구별 관외 진료현황 (전체)
+    table_id: null
+    url: https://kosis.kr
+    downloaded: 2026-05-19
+    reference_period: "2024"
+    unit: 시·군·구
+    sha256: 2625ec7024e2ff1f2f56cc36f4abf7756519e27a004892a89553c160658f3993
