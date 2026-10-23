@@ -5,7 +5,7 @@
 
 [![HRI 지도](docs/map_preview.png)](https://vashazza.github.io/HRI-korea/)
 
-**[라이브 지도 →](https://vashazza.github.io/HRI-korea/)** 시·군·구에 마우스를 올리면 하위 지수·군집·관외이용률이 나온다.
+**[라이브 지도 →](https://vashazza.github.io/HRI-korea/)** 시·군·구에 마우스를 올리면 하위 지수·군집·관외이용률이 나온다. 가중치 슬라이더(프리셋: 등가중 / LASSO 점추정 / 부트스트랩 CI 하한·상한)를 움직이면 브라우저에서 HRI와 순위를 다시 계산해 지도를 다시 칠하고, 지역을 클릭하면 LASSO 가중치 대비 순위 변화가 나온다.
 
 > **Summary.** HRI-korea builds a *Healthcare Restoration Index* for all 229 South Korean municipalities (si·gun·gu) from public HIRA and KOSIS statistics. Three PCA sub-indices — workforce (WAI), infrastructure (IAI) and demand pressure (DPI) — are combined with LASSO-derived weights, grouped into three regional types with K-Means, and probed with what-if policy scenarios. The whole chain, from a hashed raw-data manifest to the interactive map, re-runs with one command. It is a resource-distribution index, not a predictive model: it explains 13% of held-out variance in out-of-region care use and correlates only −0.13 with self-reported unmet medical need. The Limitations section says why.
 
