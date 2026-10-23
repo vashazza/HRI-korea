@@ -19,7 +19,7 @@ warnings.filterwarnings("ignore")
 import sys
 sys.path.insert(0, "src")
 from hri import paths
-from hri.loader import _normalize_one_sgg
+from hri.loader import _normalize_one_sgg, apply_admin_changes
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
@@ -32,17 +32,6 @@ SIDO_CODE_MAP = {
     "31": "경기도", "32": "강원특별자치도", "33": "충청북도", "34": "충청남도",
     "35": "전북특별자치도", "36": "전라남도", "37": "경상북도", "38": "경상남도",
     "39": "제주특별자치도",
-}
-
-
-# 2013 GeoJSON과 2024 master 간 행정구역 개편 패치
-ADMIN_PATCH = {
-    # GeoJSON에서 경북 군위군 → 2023.07 대구광역시로 이관
-    ("경상북도", "군위군"): ("대구광역시", "군위군"),
-    # 청원군 2014년 청주시로 통합
-    ("충청북도", "청원군"): ("충청북도", "청주시"),
-    # 인천 남구 → 2018년 미추홀구로 개칭
-    ("인천광역시", "남구"): ("인천광역시", "미추홀구"),
 }
 
 
@@ -60,9 +49,7 @@ def enrich_geojson(geo_path: Path) -> dict:
             sgg = "세종특별자치시"
         else:
             sgg = _normalize_one_sgg(sido, name)
-        # 행정구역 개편 패치
-        if (sido, sgg) in ADMIN_PATCH:
-            sido, sgg = ADMIN_PATCH[(sido, sgg)]
+        sido, sgg = apply_admin_changes(sido, sgg)
         p["sido"] = sido
         p["sgg_master"] = sgg
         p["join_key"] = f"{sido}|{sgg}" if sido else None

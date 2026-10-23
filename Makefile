@@ -25,4 +25,4 @@ map:
 	$(HRI) map
 
 test:
-	PYTHONPATH=src $(PYTHON) -m pytest -q
+	$(PYTHON) -m pytest -q

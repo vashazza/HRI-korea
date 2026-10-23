@@ -1,5 +1,8 @@
 # HRI-korea — 시·군·구 의료 복원 지수
 
+[![CI](https://github.com/vashazza/HRI-korea/actions/workflows/ci.yml/badge.svg)](https://github.com/vashazza/HRI-korea/actions/workflows/ci.yml)
+[![Pages](https://github.com/vashazza/HRI-korea/actions/workflows/pages.yml/badge.svg)](https://github.com/vashazza/HRI-korea/actions/workflows/pages.yml)
+
 [![HRI 지도](docs/map_preview.png)](https://vashazza.github.io/HRI-korea/)
 
 **[라이브 지도 →](https://vashazza.github.io/HRI-korea/)** 시·군·구에 마우스를 올리면 하위 지수·군집·관외이용률이 나온다.

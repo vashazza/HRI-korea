@@ -78,6 +78,19 @@ def _normalize_one_sgg(sido: str, sgg: str) -> str:
     return sgg
 
 
+# 2013년 기준 행정경계(지도 GeoJSON) → 2024년 마스터 키. 이후 행정구역 변동 반영.
+ADMIN_CHANGES = {
+    ("경상북도", "군위군"): ("대구광역시", "군위군"),    # 2023.07 대구광역시 편입
+    ("충청북도", "청원군"): ("충청북도", "청주시"),      # 2014 청주시와 통합
+    ("인천광역시", "남구"): ("인천광역시", "미추홀구"),  # 2018 미추홀구로 개칭
+}
+
+
+def apply_admin_changes(sido: str, sgg: str) -> tuple[str, str]:
+    """옛 (시도, 시군구)를 현재 행정구역으로. 변동이 없으면 그대로."""
+    return ADMIN_CHANGES.get((sido, sgg), (sido, sgg))
+
+
 def normalize_sgg(df: pd.DataFrame, *, agg_numeric: bool = True) -> pd.DataFrame:
     """sgg를 pop 마스터 키에 맞춰 정규화. 정규화 결과 같은 (sido, sgg)는 합산."""
     if "sgg" not in df.columns or "sido" not in df.columns:
