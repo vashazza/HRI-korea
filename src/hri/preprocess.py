@@ -95,7 +95,7 @@ def build_master() -> pd.DataFrame:
         if c in master.columns:
             master[c] = master[c].fillna(0)
 
-    # ── IAI 2 / WAI: HIRA 시·도 단위 → 시·군·구 인구비례 분배 ─────
+    # ── 간호사·장비·특수진료실: HIRA 시·도 단위 → 시·군·구 인구비례 분배 ─────
     # 분배 원칙: 시·도 합계 × (시·군·구 인구 / 시·도 인구). per_100k 표준화 시 시·도 값과 동일해짐.
     pop_sido_sum = pop.groupby("sido", as_index=False)["total_population"].sum().rename(
         columns={"total_population": "sido_pop"}
@@ -103,6 +103,8 @@ def build_master() -> pd.DataFrame:
 
     def _distribute_sido(df_sido: pd.DataFrame, value_cols: list[str], prefix: str) -> pd.DataFrame:
         """df_sido: [sido, *value_cols] → 229 시·군·구 단위로 인구 비례 분배."""
+        if df_sido.empty:
+            raise ValueError(f"{prefix}: 시·도 표가 비어 있다 (합계 행 필터 확인)")
         m = master[["sido", "sgg", "total_population"]].merge(pop_sido_sum, on="sido").merge(
             df_sido, on="sido", how="left"
         )
@@ -112,23 +114,14 @@ def build_master() -> pd.DataFrame:
             out[f"{prefix}_{c}"] = pd.to_numeric(m[c], errors="coerce").fillna(0) * share
         return out
 
-    # 의사
-    docs = loader.load_hira_doctors()
-    doc_value_cols = [c for c in docs.columns if c != "sido"]
-    doc_dist = _distribute_sido(docs, doc_value_cols, "doc")
-    master = master.merge(doc_dist, on=["sido", "sgg"], how="left")
+    # 의사·전문의 — 시·군·구 실측 (요양기관 단위 자료 집계). 인구비례 분배를 거치지 않는다.
+    master = master.merge(loader.load_hira_workforce_sgg(), on=["sido", "sgg"], how="left")
 
     # 간호사
     nurs = loader.load_hira_nurses()
     nur_value_cols = [c for c in nurs.columns if c != "sido"]
     nur_dist = _distribute_sido(nurs, nur_value_cols, "nur")
     master = master.merge(nur_dist, on=["sido", "sgg"], how="left")
-
-    # 전문의 — 컬럼이 많아서 핵심 5과만
-    spe = loader.load_hira_specialists()
-    spe_cols_focus = [c for c in ["합계", "내과", "외과", "응급의학과", "소아청소년과", "산부인과", "정신건강의학과"] if c in spe.columns]
-    spe_dist = _distribute_sido(spe[["sido"] + spe_cols_focus], spe_cols_focus, "spe")
-    master = master.merge(spe_dist, on=["sido", "sgg"], how="left")
 
     # 장비
     eq = loader.load_hira_equipment()

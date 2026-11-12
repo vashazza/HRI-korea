@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install
+        run: pip install -r requirements.txt && pip install -e . --no-deps
+      - name: Tests
+        run: python -m pytest -q
+      - name: Re-run pipeline from committed data (no raw data needed)
+        run: python -m hri.cli reproduce
+      - name: Reproduced outputs match committed ones
+        run: python scripts/check_reproduced.py

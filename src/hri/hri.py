@@ -4,7 +4,7 @@
 설계:
     unmet_std_pct ~ β_w·WAI + β_i·IAI + β_d·DPI + ε
 LASSO 5-fold CV로 β 추정 → 절대값 기반 비례 가중치로 환산
-HRI_i = w_w·WAI + w_i·IAI − w_d·DPI  (값이 높을수록 복원력 ↑)
+HRI_i = w_w·WAI + w_i·IAI − w_d·DPI  (값이 높을수록 복원 수준 ↑)
 """
 
 from __future__ import annotations
@@ -88,7 +88,7 @@ def compute_hri(
     df: pd.DataFrame, w: HRIWeights,
     baseline_min: float | None = None, baseline_max: float | None = None,
 ) -> pd.Series:
-    """HRI = w_w·WAI + w_i·IAI − w_d·DPI, 0-100 정규화. 값↑ = 복원력↑.
+    """HRI = w_w·WAI + w_i·IAI − w_d·DPI, 0-100 정규화. 값↑ = 복원 수준↑.
     baseline_min/max를 주면 그 범위로 정규화 (시뮬레이션 비교용).
     """
     raw = compute_hri_raw(df, w)
@@ -122,6 +122,30 @@ def holdout_validation(df: pd.DataFrame, target: str = TARGET, test_size: float 
         "test_r2": float(r2_score(yte, yhat)),
         "test_rmse": float(np.sqrt(mean_squared_error(yte, yhat))),
         "test_mae": float(mean_absolute_error(yte, yhat)),
+    }
+
+
+def repeated_holdout(df: pd.DataFrame, target: str = TARGET, n_splits: int = 200,
+                     test_size: float = 0.2) -> dict:
+    """분할을 바꿔가며 80:20 홀드아웃 R²의 분포를 본다.
+
+    WAI는 대형병원이 몰린 몇 곳(종로구 등)이 극단값이라, 한 번의 분할은 그 지역이
+    검증셋에 들어가느냐에 크게 좌우된다.
+    """
+    data = df.dropna(subset=PREDICTORS + [target])
+    X, y = data[PREDICTORS].values, data[target].values
+    r2 = []
+    for seed in range(n_splits):
+        tr, te = train_test_split(np.arange(len(data)), test_size=test_size, random_state=seed)
+        model = LassoCV(cv=5, random_state=42, max_iter=10_000).fit(X[tr], y[tr])
+        r2.append(r2_score(y[te], model.predict(X[te])))
+    r2 = np.array(r2)
+    return {
+        "n_splits": n_splits,
+        "r2_median": float(np.median(r2)),
+        "r2_q25": float(np.percentile(r2, 25)),
+        "r2_q75": float(np.percentile(r2, 75)),
+        "share_negative": float(np.mean(r2 < 0)),
     }
 
 
@@ -194,10 +218,10 @@ if __name__ == "__main__":
     print("━━━ HRI face validity ━━━")
     label = df["sido"] + " " + df["sgg"]
     sr = df["hri"].copy(); sr.index = label
-    print("TOP 10 (복원력 ↑):")
+    print("TOP 10 (복원 수준 ↑):")
     for k, v in sr.nlargest(10).items():
         print(f"  {v:6.2f}  {k}")
-    print("BOTTOM 10 (복원력 ↓):")
+    print("BOTTOM 10 (복원 수준 ↓):")
     for k, v in sr.nsmallest(10).items():
         print(f"  {v:6.2f}  {k}")
     print()
@@ -206,6 +230,11 @@ if __name__ == "__main__":
     print("━━━ 80:20 홀드아웃 ━━━")
     ho = holdout_validation(df)
     print(json.dumps(ho, indent=2, ensure_ascii=False))
+    print()
+
+    print("━━━ 반복 홀드아웃 (80:20 분할 200회) ━━━")
+    rh = repeated_holdout(df)
+    print(json.dumps(rh, indent=2, ensure_ascii=False))
     print()
 
     print("━━━ 부트스트랩 (n=100) ━━━")
@@ -241,6 +270,7 @@ if __name__ == "__main__":
             {
                 "weights": weights.to_dict(),
                 "holdout": ho,
+                "repeated_holdout": rh,
                 "bootstrap": bs,
             },
             f,

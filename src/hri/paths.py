@@ -20,13 +20,16 @@ FIGURES = REPORTS / "figures"
 
 # --- HIRA files (지역별 시·군·구 단위) ---
 HIRA_FACILITIES = HIRA / "01_facilities_by_region.xlsx"
-HIRA_SPECIALISTS = HIRA / "02_specialists_by_region.xlsx"
-HIRA_DOCTORS = HIRA / "03_doctors_by_regions.xlsx"
+HIRA_SPECIALISTS = HIRA / "02_specialists_by_region.xlsx"   # 시·도 단위 (HIRA_INSTITUTIONS로 대체됨)
+HIRA_DOCTORS = HIRA / "03_doctors_by_regions.xlsx"          # 시·도 단위 (HIRA_INSTITUTIONS로 대체됨)
 HIRA_NURSES = HIRA / "03_nurses_by_region.xlsx"
 HIRA_CLAIMS = HIRA / "04_claims_by_disease_region.csv"
 HIRA_RESOURCES = HIRA / "05_resources_per_population.csv"
 HIRA_SPECIAL_ROOMS = HIRA / "06_special_treatment_rooms.xlsx"
 HIRA_EQUIPMENT = HIRA / "07_medical_equipment.xlsx"
+
+# --- HIRA 요양기관 단위 자료 (시·군·구 집계용, 2024.12) — xlsx 12개 묶음 zip ---
+HIRA_INSTITUTIONS = RAW / "hira_sgg" / "전국 병의원 및 약국 현황 2024.12.zip"
 
 # --- KOSIS — 기존 ---
 KOSIS_DEATH = KOSIS / "사망원인 50항목 1998.csv"          # 2024년 데이터

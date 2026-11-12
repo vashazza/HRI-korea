@@ -1,28 +1,28 @@
-input: (229, 101)
+input: (229, 85)
 
 ━━━ WAI ━━━
   features: ['doc_의사_전문의_per_100k', 'nur_간호사_간호사_per_100k', 'spe_내과_per_100k', 'spe_외과_per_100k', 'spe_응급의학과_per_100k', 'spe_소아청소년과_per_100k', 'spe_산부인과_per_100k']
-  PC1 explained variance: 78.5%
+  PC1 explained variance: 72.2%
   loadings:
-    +0.457  spe_내과_per_100k
-    +0.457  doc_의사_전문의_per_100k
-    +0.455  spe_산부인과_per_100k
-    +0.421  spe_외과_per_100k
-    +0.420  spe_소아청소년과_per_100k
-    +0.149  spe_응급의학과_per_100k
-    -0.000  nur_간호사_간호사_per_100k
+    +0.436  doc_의사_전문의_per_100k
+    +0.432  spe_내과_per_100k
+    +0.392  spe_외과_per_100k
+    +0.391  spe_산부인과_per_100k
+    +0.381  spe_소아청소년과_per_100k
+    +0.352  spe_응급의학과_per_100k
+    +0.218  nur_간호사_간호사_per_100k
   TOP 5:
-    100.00  서울특별시 용산구
-    100.00  서울특별시 강남구
-    100.00  서울특별시 강서구
-    100.00  서울특별시 구로구
-    100.00  서울특별시 동작구
+    100.00  서울특별시 종로구
+     69.66  부산광역시 서구
+     67.51  대구광역시 중구
+     59.60  광주광역시 동구
+     58.53  서울특별시 강남구
   BOTTOM 5:
-      0.00  충청북도 충주시
-      0.00  충청북도 단양군
-      0.00  충청북도 괴산군
-      0.00  충청북도 영동군
-      0.00  충청북도 옥천군
+      0.00  경상북도 영양군
+      1.89  경상북도 봉화군
+      2.28  강원특별자치도 고성군
+      2.45  강원특별자치도 양양군
+      2.99  경상북도 고령군
 
 ━━━ IAI ━━━
   features: ['facilities_clinic_per_100k', 'facilities_hospital_per_100k', 'facilities_general_hospital_per_100k', 'facilities_tertiary_per_100k', 'facilities_health_center_per_100k', 'facilities_public_health_medical_per_100k', 'sr_수술실_병상수_per_100k', 'sr_분만실_병상수_per_100k', 'eq_전산화단층촬영장치_per_100k', 'eq_자기공명영상진단기_per_100k']

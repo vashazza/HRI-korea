@@ -1,43 +1,58 @@
-using weights: w_wai=0.236, w_iai=0.407, w_dpi=0.357
+using weights: w_wai=0.454, w_iai=0.000, w_dpi=0.546
 
 ━━━ S1 — WAI 하위 30% 시·군·구에서 필수 5과 전문의 + 의사 전문의 +10% ━━━
-  treated count: 68
-  ΔHRI overall mean: +0.829
+  treated count: 69
+  ΔHRI overall mean: +0.097
   ΔHRI by cluster:
-    농촌·고령-취약형                 n= 80 treated= 42  Δmean=+1.471  Δmed=+2.661
-    중간도시-기본형                  n= 91 treated= 26  Δmean=+0.793  Δmed=+0.000
-    수도권·거점-자원풍부형              n= 58 treated=  0  Δmean=+0.000  Δmed=+0.000
+    고령지역 자원부족형                n= 22 treated= 18  Δmean=+0.263  Δmed=+0.318
+    고령지역 인프라보유형               n= 35 treated= 19  Δmean=+0.162  Δmed=+0.147
+    중소도시 중간형                  n= 49 treated= 21  Δmean=+0.133  Δmed=+0.000
+    대도시·신도시 저수요형              n= 57 treated= 11  Δmean=+0.074  Δmed=+0.000
+    대형병원 밀집 도심형               n=  7 treated=  0  Δmean=+0.000  Δmed=+0.000
+    도시 거점형                    n= 59 treated=  0  Δmean=+0.000  Δmed=+0.000
 
 ━━━ S2 — IAI 하위 30%에서 의원(facilities_clinic) +5개 ━━━
   treated count: 69
-  ΔHRI overall mean: +0.090
+  ΔHRI overall mean: +0.000
   ΔHRI by cluster:
-    농촌·고령-취약형                 n= 80 treated= 29  Δmean=+0.181  Δmed=+0.000
-    중간도시-기본형                  n= 91 treated= 40  Δmean=+0.069  Δmed=+0.000
-    수도권·거점-자원풍부형              n= 58 treated=  0  Δmean=+0.000  Δmed=+0.000
+    고령지역 인프라보유형               n= 35 treated=  0  Δmean=+0.000  Δmed=+0.000
+    고령지역 자원부족형                n= 22 treated= 18  Δmean=+0.000  Δmed=+0.000
+    대도시·신도시 저수요형              n= 57 treated= 30  Δmean=+0.000  Δmed=+0.000
+    대형병원 밀집 도심형               n=  7 treated=  0  Δmean=+0.000  Δmed=+0.000
+    도시 거점형                    n= 59 treated=  0  Δmean=+0.000  Δmed=+0.000
+    중소도시 중간형                  n= 49 treated= 21  Δmean=+0.000  Δmed=+0.000
 
 ━━━ S3 — CT+MRI 인구당 보유량 하위 30%에서 CT, MRI 각각 +1대 ━━━
-  treated count: 67
-  ΔHRI overall mean: +1.619
+  treated count: 40
+  ΔHRI overall mean: +0.000
   ΔHRI by cluster:
-    농촌·고령-취약형                 n= 80 treated= 23  Δmean=+2.916  Δmed=+0.000
-    중간도시-기본형                  n= 91 treated= 44  Δmean=+1.511  Δmed=+0.000
-    수도권·거점-자원풍부형              n= 58 treated=  0  Δmean=+0.000  Δmed=+0.000
+    고령지역 인프라보유형               n= 35 treated=  0  Δmean=+0.000  Δmed=+0.000
+    고령지역 자원부족형                n= 22 treated= 16  Δmean=+0.000  Δmed=+0.000
+    대도시·신도시 저수요형              n= 57 treated= 11  Δmean=+0.000  Δmed=+0.000
+    대형병원 밀집 도심형               n=  7 treated=  0  Δmean=+0.000  Δmed=+0.000
+    도시 거점형                    n= 59 treated=  0  Δmean=+0.000  Δmed=+0.000
+    중소도시 중간형                  n= 49 treated= 13  Δmean=+0.000  Δmed=+0.000
 
 ━━━ S4 — 보건의료원이 없는 시·군·구에 보건의료원 신설(+1개) ━━━
   treated count: 213
-  ΔHRI overall mean: -0.428
+  ΔHRI overall mean: +0.000
   ΔHRI by cluster:
-    수도권·거점-자원풍부형              n= 58 treated= 58  Δmean=-0.188  Δmed=-0.141
-    중간도시-기본형                  n= 91 treated= 89  Δmean=-0.259  Δmed=-0.163
-    농촌·고령-취약형                 n= 80 treated= 66  Δmean=-0.795  Δmed=-0.811
+    고령지역 인프라보유형               n= 35 treated= 27  Δmean=+0.000  Δmed=+0.000
+    고령지역 자원부족형                n= 22 treated= 18  Δmean=+0.000  Δmed=+0.000
+    대도시·신도시 저수요형              n= 57 treated= 57  Δmean=+0.000  Δmed=+0.000
+    대형병원 밀집 도심형               n=  7 treated=  7  Δmean=+0.000  Δmed=+0.000
+    도시 거점형                    n= 59 treated= 59  Δmean=+0.000  Δmed=+0.000
+    중소도시 중간형                  n= 49 treated= 45  Δmean=+0.000  Δmed=+0.000
 
 ━━━ 클러스터 × 시나리오 ΔHRI 매트릭스 ━━━
-scenario         S1     S2     S3     S4
-cluster                                 
-농촌·고령-취약형     1.471  0.181  2.916 -0.795
-수도권·거점-자원풍부형  0.000  0.000  0.000 -0.188
-중간도시-기본형      0.793  0.069  1.511 -0.259
+scenario         S1   S2   S3   S4
+cluster                           
+고령지역 인프라보유형   0.162  0.0  0.0  0.0
+고령지역 자원부족형    0.263  0.0  0.0  0.0
+대도시·신도시 저수요형  0.074  0.0  0.0  0.0
+대형병원 밀집 도심형   0.000  0.0  0.0  0.0
+도시 거점형        0.000  0.0  0.0  0.0
+중소도시 중간형      0.133  0.0  0.0  0.0
 
 saved → /Users/vashazza/Desktop/00_Univ/2026/05_의과학의현재와미래/data/processed/scenario_simulations.csv
 saved → /Users/vashazza/Desktop/00_Univ/2026/05_의과학의현재와미래/data/processed/scenario_cluster_matrix.csv

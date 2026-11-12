@@ -76,30 +76,22 @@ def profile_clusters(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def name_clusters(profile: pd.DataFrame) -> dict[int, str]:
-    """클러스터 프로파일을 보고 직관적 이름 부여."""
-    # 정렬 기준: HRI 점수 ↓ 순으로 라벨 부여
-    p = profile.sort_values("hri", ascending=False).reset_index(drop=True)
-    names = {}
-    rank = 0
-    for _, row in p.iterrows():
-        cid = int(row["cluster_id"])
-        rank += 1
-        wai, iai, dpi = row["wai"], row["iai"], row["dpi"]
-        hri = row["hri"]
-        # 분류 규칙 — WAI/IAI/DPI 패턴에 따른 직관적 라벨
-        if wai > 70 and iai > 60:
-            label = "수도권·거점-자원풍부형"
-        elif dpi > 65 and wai < 30:
-            label = "농촌·고령-취약형"
-        elif dpi > 60:
-            label = "고령-저접근형"
-        elif wai < 30 and iai > 30:
-            label = "인프라보유-인력공백형"
-        elif hri > 35 and dpi < 40:
-            label = "중간도시-기본형"
+    """군집 평균(WAI·IAI·DPI)의 패턴으로 이름을 붙인다. 이름은 군집마다 달라야 한다."""
+    names: dict[int, str] = {}
+    for rank, row in enumerate(profile.sort_values("hri", ascending=False).itertuples(), start=1):
+        if row.wai > 40:
+            label = "대형병원 밀집 도심형"
+        elif row.dpi > 65:
+            label = "고령지역 인프라보유형" if row.iai >= 30 else "고령지역 자원부족형"
+        elif row.iai > 50:
+            label = "도시 거점형"
+        elif row.dpi < 25:
+            label = "대도시·신도시 저수요형"
         else:
-            label = f"군집 {rank}"
-        names[cid] = label
+            label = "중소도시 중간형"
+        if label in names.values():   # 규칙이 두 군집을 못 가르면 HRI 순위를 붙여 구분
+            label = f"{label} {rank}"
+        names[int(row.cluster_id)] = label
     return names
 
 

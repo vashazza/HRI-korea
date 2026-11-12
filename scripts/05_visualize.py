@@ -28,11 +28,10 @@ FIG_DIR.mkdir(parents=True, exist_ok=True)
 hri_df = pd.read_csv(paths.PROCESSED / "hri_with_clusters.csv", encoding="utf-8-sig")
 sim_df = pd.read_csv(paths.PROCESSED / "scenario_simulations.csv", encoding="utf-8-sig")
 
-CLUSTER_COLORS = {
-    "수도권·거점-자원풍부형": "#2c7fb8",
-    "중간도시-기본형": "#41ab5d",
-    "농촌·고령-취약형": "#cb181d",
-}
+# 군집 색 — HRI 평균이 높은 군집부터 Okabe-Ito 팔레트(색각 이상에도 구분됨) 순서로 배정
+_PALETTE = ["#0072B2", "#56B4E9", "#009E73", "#E69F00", "#D55E00", "#CC79A7", "#999999", "#000000"]
+_order = hri_df.groupby("cluster_name")["hri"].mean().sort_values(ascending=False).index
+CLUSTER_COLORS = dict(zip(_order, _PALETTE))
 
 
 # 1) HRI 분포 히스토그램 + 클러스터별
@@ -68,7 +67,7 @@ ax.set_xticklabels(labels, size=11)
 ax.set_yticks([20, 40, 60, 80])
 ax.set_yticklabels(["20", "40", "60", "80"], size=8)
 ax.set_ylim(0, 100)
-ax.set_title("클러스터 평균 프로파일 (DPI는 반전: 100−DPI)", pad=20)
+ax.set_title("클러스터 평균 프로파일 (DPI는 반전: 100 - DPI)", pad=20)
 ax.legend(loc="upper right", bbox_to_anchor=(1.3, 1.1), frameon=False)
 fig.tight_layout()
 fig.savefig(FIG_DIR / "02_cluster_radar.png", dpi=150)
@@ -85,7 +84,7 @@ for ax, sc in zip(axes, ["S1", "S2", "S3", "S4"]):
         d = sub[sub["cluster_name"] == name]["delta_hri"]
         if len(d) > 0:
             data.append(d)
-            labels_b.append(name.split("·")[0])
+            labels_b.append(name.replace(" ", "\n"))
             colors_b.append(col)
     bp = ax.boxplot(data, patch_artist=True, labels=labels_b, widths=0.6)
     for patch, c in zip(bp["boxes"], colors_b):
@@ -95,7 +94,7 @@ for ax, sc in zip(axes, ["S1", "S2", "S3", "S4"]):
     ax.set_title(sc)
     ax.set_ylabel("ΔHRI") if sc == "S1" else None
     ax.grid(axis="y", alpha=0.3)
-    ax.tick_params(axis="x", rotation=30)
+    ax.tick_params(axis="x", rotation=90, labelsize=7)
 fig.suptitle("시나리오별 클러스터 ΔHRI 분포", y=1.02)
 fig.tight_layout()
 fig.savefig(FIG_DIR / "03_scenario_boxplot.png", dpi=150, bbox_inches="tight")
@@ -116,7 +115,7 @@ xs = np.linspace(hri_df["hri"].min(), hri_df["hri"].max(), 100)
 ax.plot(xs, np.polyval(z, xs), "k--", lw=1.5, alpha=0.6, label=f"OLS y = {z[0]:+.4f}x + {z[1]:.3f}")
 
 r = hri_df[["hri", "outflow_cost_ratio"]].corr().iloc[0, 1]
-ax.set_xlabel("HRI (복원력 지수)")
+ax.set_xlabel("HRI (의료 복원 지수)")
 ax.set_ylabel("관외 의료이용률 (cost 기준)")
 ax.set_title(f"HRI vs 관외 의료이용률  (Pearson r = {r:.3f})")
 ax.legend(loc="upper right", frameon=False)
@@ -137,7 +136,7 @@ for i, (xn, yn) in enumerate([("wai", "iai"), ("wai", "dpi"), ("iai", "dpi")], s
     ax.set_xlabel(xn.upper())
     ax.set_ylabel(yn.upper())
     if i == 1:
-        ax.legend(loc="upper right", fontsize=8, frameon=False)
+        ax.legend(loc="lower right", fontsize=8, frameon=False)
     ax.grid(alpha=0.3)
 fig.suptitle("WAI·IAI·DPI 페어플롯 (클러스터 색상)")
 fig.tight_layout()

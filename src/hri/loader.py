@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import io
+import zipfile
 from pathlib import Path
 
 import pandas as pd
@@ -76,6 +78,19 @@ def _normalize_one_sgg(sido: str, sgg: str) -> str:
             if not tail.startswith("시") and tail:
                 return pref + "시"
     return sgg
+
+
+# 2013년 기준 행정경계(지도 GeoJSON) → 2024년 마스터 키. 이후 행정구역 변동 반영.
+ADMIN_CHANGES = {
+    ("경상북도", "군위군"): ("대구광역시", "군위군"),    # 2023.07 대구광역시 편입
+    ("충청북도", "청원군"): ("충청북도", "청주시"),      # 2014 청주시와 통합
+    ("인천광역시", "남구"): ("인천광역시", "미추홀구"),  # 2018 미추홀구로 개칭
+}
+
+
+def apply_admin_changes(sido: str, sgg: str) -> tuple[str, str]:
+    """옛 (시도, 시군구)를 현재 행정구역으로. 변동이 없으면 그대로."""
+    return ADMIN_CHANGES.get((sido, sgg), (sido, sgg))
 
 
 def normalize_sgg(df: pd.DataFrame, *, agg_numeric: bool = True) -> pd.DataFrame:
@@ -302,31 +317,58 @@ def load_hira_facilities() -> pd.DataFrame:
     return normalize_sgg(df)
 
 
-def load_hira_doctors() -> pd.DataFrame:
-    """03_doctors — 시·도 × 요양기관종별. '소계' 행이 시도 총합."""
-    df = pd.read_excel(paths.HIRA_DOCTORS, sheet_name=0, header=[2, 3])
-    df.columns = ["_".join([str(x) for x in c if "Unnamed" not in str(x) and str(x) != "nan"]).strip("_") for c in df.columns]
-    first2 = df.columns[:2]
-    df = df.rename(columns={first2[0]: "sido", first2[1]: "kind"})
-    df["sido"] = normalize_sido(df["sido"])
-    df = df[df["kind"] == "소계"].copy().drop(columns=["kind"]).reset_index(drop=True)
-    return df
+def _read_institution_sheet(number: int) -> pd.DataFrame:
+    """HIRA_INSTITUTIONS zip 안의 '<number>.…xlsx' 시트. 파일명이 cp949라 앞 번호로 찾는다."""
+    with zipfile.ZipFile(paths.HIRA_INSTITUTIONS) as z:
+        name = next(n for n in z.namelist() if n.split(".")[0] == str(number))
+        return pd.read_excel(io.BytesIO(z.read(name)), dtype=str)
+
+
+# 병원정보서비스 열 → 마스터 열
+_DOCTOR_COLS = {
+    "의과일반의 인원수": "doc_의사_일반의",
+    "의과인턴 인원수": "doc_의사_인턴",
+    "의과레지던트 인원수": "doc_의사_레지던트",
+    "의과전문의 인원수": "doc_의사_전문의",
+}
+_SPECIALTIES = ["내과", "외과", "응급의학과", "소아청소년과", "산부인과", "정신건강의학과"]
+
+
+def load_hira_workforce_sgg() -> pd.DataFrame:
+    """의사·전문과목별 전문의 수 — 요양기관 단위 신고 자료를 소재지 시·군·구로 집계 (2024.12).
+
+    반환: [sido, sgg, doc_의사_의사계, doc_의사_일반의, doc_의사_인턴, doc_의사_레지던트,
+            doc_의사_전문의, spe_<전문과목>…]
+    """
+    hosp = _read_institution_sheet(1)   # 병원정보서비스: 기관별 소재지 + 의사 수
+    hosp["sido"] = normalize_sido(hosp["시도코드명"])
+    hosp["sgg"] = hosp["시군구코드명"]
+
+    docs = hosp[["sido", "sgg"]].copy()
+    for src, dst in _DOCTOR_COLS.items():
+        docs[dst] = pd.to_numeric(hosp[src])
+    docs["doc_의사_의사계"] = docs[list(_DOCTOR_COLS.values())].sum(axis=1)
+
+    dept = _read_institution_sheet(5)   # 진료과목정보: 기관 × 진료과목별 전문의 수
+    dept = dept[dept["진료과목코드명"].isin(_SPECIALTIES)].merge(
+        hosp[["암호화요양기호", "sido", "sgg"]], on="암호화요양기호", validate="many_to_one"
+    )
+    dept["n"] = pd.to_numeric(dept["과목별 전문의수"])
+    spe = dept.pivot_table(index=["sido", "sgg"], columns="진료과목코드명", values="n", aggfunc="sum", fill_value=0)
+    spe = spe[_SPECIALTIES].add_prefix("spe_").reset_index()
+
+    out = normalize_sgg(docs).merge(normalize_sgg(spe), on=["sido", "sgg"], how="left")
+    spe_cols = [f"spe_{s}" for s in _SPECIALTIES]
+    out[spe_cols] = out[spe_cols].fillna(0)   # 해당 과 전문의가 한 명도 없는 시·군·구
+    return out
 
 
 def load_hira_nurses() -> pd.DataFrame:
+    """03_nurses — 시·도 × 요양기관종별. 의사 파일과 달리 시도 총합 행이 '계'다."""
     df = pd.read_excel(paths.HIRA_NURSES, sheet_name=0, header=[2, 3])
     df.columns = ["_".join([str(x) for x in c if "Unnamed" not in str(x) and str(x) != "nan"]).strip("_") for c in df.columns]
     first2 = df.columns[:2]
     df = df.rename(columns={first2[0]: "sido", first2[1]: "kind"})
-    df["sido"] = normalize_sido(df["sido"])
-    df = df[df["kind"] == "소계"].copy().drop(columns=["kind"]).reset_index(drop=True)
-    return df
-
-
-def load_hira_specialists() -> pd.DataFrame:
-    """02_specialists — 시·도 × 요양기관종별 × 전문과목. '계' 행이 시도 총합."""
-    df = pd.read_excel(paths.HIRA_SPECIALISTS, sheet_name=0, header=2)
-    df = df.rename(columns={df.columns[0]: "sido", df.columns[1]: "kind"})
     df["sido"] = normalize_sido(df["sido"])
     df = df[df["kind"] == "계"].copy().drop(columns=["kind"]).reset_index(drop=True)
     return df

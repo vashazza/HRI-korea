@@ -12,6 +12,8 @@ dependencies = [
     "matplotlib>=3.7",
     "seaborn>=0.13",
     "openpyxl>=3.1",
+    "lxml>=5.0",
+    "pyyaml>=6.0",
     "tqdm>=4.66",
     "jupyter>=1.0",
     "ipykernel>=6.29",
@@ -22,6 +24,12 @@ geo = [
     "geopandas>=0.14",
     "folium>=0.16",
 ]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+hri = "hri.cli:main"
 
 [build-system]
 requires = ["setuptools>=68"]
@@ -29,3 +37,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
