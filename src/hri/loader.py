@@ -327,12 +327,13 @@ def load_hira_doctors() -> pd.DataFrame:
 
 
 def load_hira_nurses() -> pd.DataFrame:
+    """03_nurses — 시·도 × 요양기관종별. 의사 파일과 달리 시도 총합 행이 '계'다."""
     df = pd.read_excel(paths.HIRA_NURSES, sheet_name=0, header=[2, 3])
     df.columns = ["_".join([str(x) for x in c if "Unnamed" not in str(x) and str(x) != "nan"]).strip("_") for c in df.columns]
     first2 = df.columns[:2]
     df = df.rename(columns={first2[0]: "sido", first2[1]: "kind"})
     df["sido"] = normalize_sido(df["sido"])
-    df = df[df["kind"] == "소계"].copy().drop(columns=["kind"]).reset_index(drop=True)
+    df = df[df["kind"] == "계"].copy().drop(columns=["kind"]).reset_index(drop=True)
     return df
 
 

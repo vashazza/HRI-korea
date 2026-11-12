@@ -59,3 +59,12 @@ def test_stored_hri_matches_formula(results, weights):
 def test_three_named_clusters(results):
     assert results["cluster_name"].notna().all()
     assert results["cluster_id"].nunique() == 3
+
+
+def test_index_inputs_are_not_constant():
+    # 로더가 조용히 빈 표를 돌려주면 병합 뒤 0으로 채워져 변수가 통째로 죽는다 (간호사 변수에서 실제로 있었던 일)
+    from hri.indices import DPI_RATE_FEATURES, IAI_COUNT_FEATURES, WAI_COUNT_FEATURES
+
+    master = pd.read_csv(paths.PROCESSED / "master_with_indices.csv", encoding="utf-8-sig")
+    for col in WAI_COUNT_FEATURES + IAI_COUNT_FEATURES + DPI_RATE_FEATURES:
+        assert master[col].nunique() > 1, f"{col} 값이 전부 같다"

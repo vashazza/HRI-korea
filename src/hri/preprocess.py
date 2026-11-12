@@ -103,6 +103,8 @@ def build_master() -> pd.DataFrame:
 
     def _distribute_sido(df_sido: pd.DataFrame, value_cols: list[str], prefix: str) -> pd.DataFrame:
         """df_sido: [sido, *value_cols] → 229 시·군·구 단위로 인구 비례 분배."""
+        if df_sido.empty:
+            raise ValueError(f"{prefix}: 시·도 표가 비어 있다 (합계 행 필터 확인)")
         m = master[["sido", "sgg", "total_population"]].merge(pop_sido_sum, on="sido").merge(
             df_sido, on="sido", how="left"
         )
