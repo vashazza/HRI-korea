@@ -36,7 +36,7 @@ class ScenarioResult:
 def _bottom_30_mask(s: pd.Series) -> pd.Series:
     """하위 30% 마스크 — strict <(quantile) 로 동률 다수 시 과대 포함 방지.
 
-    시·도 값을 인구비례로 나눈 변수(WAI, 장비)는 같은 시·도 안에서 수학적으로 같지만
+    시·도 값을 인구비례로 나눈 변수(장비 등)는 같은 시·도 안에서 수학적으로 같지만
     부동소수점 잡음(~1e-14)이 남는다. 반올림 없이 비교하면 경계에 걸린 시·도가
     잡음에 따라 쪼개지고 BLAS 빌드마다 결과가 달라진다.
     """
@@ -65,6 +65,7 @@ def apply_scenario(
     if scenario == "S1":
         mask = _bottom_30_mask(base["wai"])
         cols = ["spe_내과", "spe_외과", "spe_응급의학과", "spe_소아청소년과", "spe_산부인과", "doc_의사_전문의"]
+        sim[cols] = sim[cols].astype(float)   # 실측 인원수는 정수형 — 10% 증원은 실수
         for c in cols:
             sim.loc[mask, c] = sim.loc[mask, c] * 1.10
         desc = "WAI 하위 30% 시·군·구에서 필수 5과 전문의 + 의사 전문의 +10%"
@@ -97,7 +98,7 @@ def apply_scenario(
     merged = merged.rename(columns={"hri": "hri_before"})
     merged["hri_after"] = after["hri"].values
     merged["delta_hri"] = delta.values
-    merged["treated"] = (delta.abs() > 1e-9)
+    merged["treated"] = mask.to_numpy()   # 개입 대상 여부 (가중치가 0이면 대상이어도 ΔHRI는 0)
 
     by_cluster = (
         merged.groupby("cluster_name", as_index=False)

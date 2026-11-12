@@ -52,9 +52,14 @@ def test_changing_one_region_moves_only_that_region(setup):
     sim = master.copy()
     sim.loc[0, "facilities_clinic"] += 5
     after = transform_indices(sim, fits)
-    after_hri = compute_hri(after, w, lo, hi)
-    delta = (after_hri - base["hri"]).to_numpy()
-    assert delta[0] > 0
+    # 추정된 가중치와 무관하게 확인: 그 지역의 IAI만 오르고 다른 지역·다른 지수는 그대로
+    d_iai = (after["iai"] - base["iai"]).to_numpy()
+    assert d_iai[0] > 0
+    assert np.all(d_iai[1:] == 0)
+    for col in ["wai", "dpi"]:
+        np.testing.assert_array_equal(after[col].to_numpy(), base[col].to_numpy())
+    delta = (compute_hri(after, w, lo, hi) - base["hri"]).to_numpy()
+    assert delta[0] >= 0
     assert np.all(delta[1:] == 0)
 
 
@@ -77,10 +82,11 @@ def test_s1_touches_only_bottom_30pct_wai(setup):
     assert np.all(delta[targeted] >= 0)
 
 
-@pytest.mark.parametrize("scenario", ["S1", "S3"])
-def test_province_level_targets_are_not_split(setup, scenario):
-    # WAI·장비는 시·도 값을 인구비례로 나눈 것이라 같은 시·도는 함께 대상이 되거나 함께 빠져야 한다
-    master, base, fits, w, lo, hi = setup
-    r = apply_scenario(master, base, fits, w, scenario, lo, hi)
-    per_sido = r.df.groupby("sido")["treated"].agg(["min", "max"])
+def test_province_level_targets_are_not_split(setup):
+    # 장비(CT·MRI)는 시·도 값을 인구비례로 나눈 것이라 같은 시·도는 함께 대상이 되거나 함께 빠져야 한다.
+    # ΔHRI가 아니라 입력 변화로 확인한다 (IAI 가중치가 0이면 ΔHRI는 대상이어도 0).
+    master, base, fits, *_ = setup
+    ct_mri = master["eq_전산화단층촬영장치"] + master["eq_자기공명영상진단기"]
+    targeted = _bottom_30_mask(ct_mri / (master["total_population"] / 100_000))
+    per_sido = targeted.groupby(master["sido"]).agg(["min", "max"])
     assert (per_sido["min"] == per_sido["max"]).all(), per_sido[per_sido["min"] != per_sido["max"]]

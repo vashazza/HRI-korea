@@ -90,7 +90,7 @@ PANEL_CSS = """<style>
 PANEL_HTML = """
 <div id="hri-controls" class="hri-panel">
   <h4>지역 의료 복원 지수 (HRI)</h4>
-  <div class="hri-sub">229 시·군·구 · 수요·결과 2024 / 공급(HIRA) 2026Q1</div>
+  <div class="hri-sub">229 시·군·구 · 수요·결과·의사 2024 / 그 외 공급 2026Q1</div>
   <div class="hri-sub" style="margin:4px 0 2px">HRI = w₁·WAI + w₂·IAI − w₃·DPI → 229곳 기준 0~100</div>
   <div class="hri-row"><label for="hri-w0">w₁ 인력 WAI</label>
     <input id="hri-w0" type="range" min="0" max="1" step="any"><span id="hri-v0" class="hri-num"></span></div>

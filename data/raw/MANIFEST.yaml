@@ -13,7 +13,8 @@
 #   reference_period  자료의 기준 시점 (파일 내부 표기 기준)
 #   sha256            파일 해시
 #
-# 주의: HIRA 공급측 자료(인력·전문의·시설·장비·특수진료실)는 2026년 1분기 기준이고,
+# 주의: 의사·전문의(HIRA_INSTITUTIONS)는 2024년 12월 기준. 나머지 HIRA 공급측 자료
+#       (간호사·시설·장비·특수진료실)는 2026년 1분기 기준이고,
 #       수요·결과측 자료(인구·미충족의료·관외이용·의료급여)는 2024년 기준이다.
 
 version: 1
@@ -35,7 +36,7 @@ files:
 
   - key: HIRA_SPECIALISTS
     path: hira/02_specialists_by_region.xlsx
-    used: true
+    used: false   # HIRA_INSTITUTIONS(시·군·구 실측)로 대체
     org: 건강보험심사평가원 (HIRA)
     source: 보건의료빅데이터개방시스템 > 의료통계정보
     table_name: 지역별종별_전문과목별전문의수(단위_명)
@@ -48,7 +49,7 @@ files:
 
   - key: HIRA_DOCTORS
     path: hira/03_doctors_by_regions.xlsx
-    used: true
+    used: false   # HIRA_INSTITUTIONS(시·군·구 실측)로 대체
     org: 건강보험심사평가원 (HIRA)
     source: 보건의료빅데이터개방시스템 > 의료통계정보
     table_name: 지역별종별_의료인력현황_의사등(단위_명)
@@ -123,6 +124,21 @@ files:
     reference_period: 2026Q1
     unit: 시·도 × 요양기관종별
     sha256: 399624be5941aa90bde13521498781e998c8384e58fece48d1485ac2f33e5641
+
+  # 요양기관 단위 신고 자료 (xlsx 12개 묶음). 1번 병원정보서비스(소재지·의사 수)와
+  # 5번 진료과목정보(과목별 전문의 수)만 읽어 시·군·구로 집계한다.
+  - key: HIRA_INSTITUTIONS
+    path: hira_sgg/전국 병의원 및 약국 현황 2024.12.zip
+    used: true
+    org: 건강보험심사평가원 (HIRA)
+    source: 보건의료빅데이터개방시스템 > 공공데이터 (공공데이터포털 15051059의 2024-12-31 시점본)
+    table_name: 전국 병의원 및 약국 현황 2024.12
+    table_id: null
+    url: https://opendata.hira.or.kr/op/opc/selectOpenData.do?sno=11925
+    downloaded: 2026-11-12
+    reference_period: 2024-12
+    unit: 요양기관 (시도·시군구 소재지 포함)
+    sha256: cf612fbe0dc78ccc67dee561703221a6412242ed2ca7f335182ef8d9c684ba7e
 
   # ── KOSIS 국가통계포털 ─────────────────────────────────────────
   - key: KOSIS_DEATH
