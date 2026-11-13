@@ -1,4 +1,4 @@
-input: (229, 85)
+input: (229, 78)
 
 ━━━ WAI ━━━
   features: ['doc_의사_전문의_per_100k', 'nur_간호사_간호사_per_100k', 'spe_내과_per_100k', 'spe_외과_per_100k', 'spe_응급의학과_per_100k', 'spe_소아청소년과_per_100k', 'spe_산부인과_per_100k']
@@ -26,30 +26,30 @@ input: (229, 85)
 
 ━━━ IAI ━━━
   features: ['facilities_clinic_per_100k', 'facilities_hospital_per_100k', 'facilities_general_hospital_per_100k', 'facilities_tertiary_per_100k', 'facilities_health_center_per_100k', 'facilities_public_health_medical_per_100k', 'sr_수술실_병상수_per_100k', 'sr_분만실_병상수_per_100k', 'eq_전산화단층촬영장치_per_100k', 'eq_자기공명영상진단기_per_100k']
-  PC1 explained variance: 33.3%
+  PC1 explained variance: 44.0%
   loadings:
-    +0.506  eq_자기공명영상진단기_per_100k
-    +0.496  sr_수술실_병상수_per_100k
-    +0.446  eq_전산화단층촬영장치_per_100k
-    +0.342  facilities_clinic_per_100k
-    +0.229  sr_분만실_병상수_per_100k
-    +0.221  facilities_hospital_per_100k
-    +0.212  facilities_tertiary_per_100k
-    +0.106  facilities_general_hospital_per_100k
-    -0.100  facilities_public_health_medical_per_100k
-    -0.119  facilities_health_center_per_100k
+    +0.452  eq_자기공명영상진단기_per_100k
+    +0.443  sr_수술실_병상수_per_100k
+    +0.423  eq_전산화단층촬영장치_per_100k
+    +0.343  facilities_clinic_per_100k
+    +0.331  facilities_tertiary_per_100k
+    +0.313  sr_분만실_병상수_per_100k
+    +0.199  facilities_hospital_per_100k
+    +0.185  facilities_general_hospital_per_100k
+    -0.100  facilities_health_center_per_100k
+    -0.109  facilities_public_health_medical_per_100k
   TOP 5:
     100.00  대구광역시 중구
-     94.28  서울특별시 강남구
-     82.73  광주광역시 동구
-     78.46  서울특별시 종로구
-     77.64  서울특별시 서초구
+     89.30  부산광역시 서구
+     75.51  서울특별시 강남구
+     74.84  서울특별시 종로구
+     63.03  광주광역시 동구
   BOTTOM 5:
-      0.00  경상북도 울릉군
-      9.97  제주특별자치도 서귀포시
-     10.22  경상북도 영양군
-     10.24  경상북도 청송군
-     10.84  세종특별자치시 세종특별자치시
+      0.00  전북특별자치도 장수군
+      0.13  강원특별자치도 양양군
+      0.31  강원특별자치도 고성군
+      0.41  대구광역시 군위군
+      0.82  강원특별자치도 화천군
 
 ━━━ DPI ━━━
   features: ['aging_rate', 'extinction_index_inverted', 'medical_aid_recipient_rate', 'claims_cost_per_capita']

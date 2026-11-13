@@ -95,7 +95,7 @@ def build_master() -> pd.DataFrame:
         if c in master.columns:
             master[c] = master[c].fillna(0)
 
-    # ── 간호사·장비·특수진료실: HIRA 시·도 단위 → 시·군·구 인구비례 분배 ─────
+    # ── 간호사: HIRA 시·도 단위 → 시·군·구 인구비례 분배 ─────
     # 분배 원칙: 시·도 합계 × (시·군·구 인구 / 시·도 인구). per_100k 표준화 시 시·도 값과 동일해짐.
     pop_sido_sum = pop.groupby("sido", as_index=False)["total_population"].sum().rename(
         columns={"total_population": "sido_pop"}
@@ -123,20 +123,8 @@ def build_master() -> pd.DataFrame:
     nur_dist = _distribute_sido(nurs, nur_value_cols, "nur")
     master = master.merge(nur_dist, on=["sido", "sgg"], how="left")
 
-    # 장비
-    eq = loader.load_hira_equipment()
-    # 핵심 장비만 — CT/MRI/PET
-    eq_cols_focus = [c for c in eq.columns if any(k in c for k in ["전산화단층", "자기공명", "양전자", "혈관조영", "유방촬영"])]
-    if eq_cols_focus:
-        eq_dist = _distribute_sido(eq[["sido"] + eq_cols_focus], eq_cols_focus, "eq")
-        master = master.merge(eq_dist, on=["sido", "sgg"], how="left")
-
-    # 특수진료실
-    sr = loader.load_hira_special_rooms()
-    sr_cols_focus = [c for c in sr.columns if any(k in c for k in ["분만", "신생아", "수술", "중환자"])]
-    if sr_cols_focus:
-        sr_dist = _distribute_sido(sr[["sido"] + sr_cols_focus], sr_cols_focus, "sr")
-        master = master.merge(sr_dist, on=["sido", "sgg"], how="left")
+    # 장비(CT·MRI)·수술실·분만실 병상 — 시·군·구 실측 (요양기관 단위 자료 집계)
+    master = master.merge(loader.load_hira_infrastructure_sgg(), on=["sido", "sgg"], how="left")
 
     return master
 

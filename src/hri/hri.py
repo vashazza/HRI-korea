@@ -151,25 +151,28 @@ def repeated_holdout(df: pd.DataFrame, target: str = TARGET, n_splits: int = 200
 
 def bootstrap_weights(df: pd.DataFrame, target: str = TARGET, n_iter: int = 100,
                       random_state: int = 42) -> dict:
-    """부트스트랩 100회로 가중치 신뢰구간."""
+    """부트스트랩으로 가중치 신뢰구간과, 각 지수가 LASSO에 남는 비율을 본다."""
     data = df.dropna(subset=PREDICTORS + [target]).copy()
     rng = np.random.default_rng(random_state)
-    rows = []
+    rows, kept = [], []
     for _ in range(n_iter):
         idx = rng.integers(0, len(data), len(data))
         sample = data.iloc[idx]
         w = fit_hri_weights(sample, target=target, random_state=random_state)
         rows.append([w.w_wai, w.w_iai, w.w_dpi])
-    arr = np.array(rows)
-    return {
-        "n_iter": n_iter,
-        "w_wai": {"mean": float(arr[:, 0].mean()), "ci_lo": float(np.percentile(arr[:, 0], 2.5)),
-                  "ci_hi": float(np.percentile(arr[:, 0], 97.5))},
-        "w_iai": {"mean": float(arr[:, 1].mean()), "ci_lo": float(np.percentile(arr[:, 1], 2.5)),
-                  "ci_hi": float(np.percentile(arr[:, 1], 97.5))},
-        "w_dpi": {"mean": float(arr[:, 2].mean()), "ci_lo": float(np.percentile(arr[:, 2], 2.5)),
-                  "ci_hi": float(np.percentile(arr[:, 2], 97.5))},
-    }
+        kept.append([w.raw_coef[p] != 0 for p in PREDICTORS])
+    arr, kept = np.array(rows), np.array(kept)
+
+    def summary(i: int) -> dict:
+        col = arr[:, i]
+        return {
+            "mean": float(col.mean()),
+            "ci_lo": float(np.percentile(col, 2.5)),
+            "ci_hi": float(np.percentile(col, 97.5)),
+            "selected": float(kept[:, i].mean()),   # LASSO가 이 지수를 남긴(계수≠0) 표본의 비율
+        }
+
+    return {"n_iter": n_iter, "w_wai": summary(0), "w_iai": summary(1), "w_dpi": summary(2)}
 
 
 def external_validation(df: pd.DataFrame, external_col: str) -> dict:
