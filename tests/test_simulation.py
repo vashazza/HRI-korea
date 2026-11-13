@@ -82,11 +82,13 @@ def test_s1_touches_only_bottom_30pct_wai(setup):
     assert np.all(delta[targeted] >= 0)
 
 
-def test_province_level_targets_are_not_split(setup):
-    # 장비(CT·MRI)는 시·도 값을 인구비례로 나눈 것이라 같은 시·도는 함께 대상이 되거나 함께 빠져야 한다.
-    # ΔHRI가 아니라 입력 변화로 확인한다 (IAI 가중치가 0이면 ΔHRI는 대상이어도 0).
-    master, base, fits, *_ = setup
-    ct_mri = master["eq_전산화단층촬영장치"] + master["eq_자기공명영상진단기"]
-    targeted = _bottom_30_mask(ct_mri / (master["total_population"] / 100_000))
-    per_sido = targeted.groupby(master["sido"]).agg(["min", "max"])
-    assert (per_sido["min"] == per_sido["max"]).all(), per_sido[per_sido["min"] != per_sido["max"]]
+def test_bottom_30_mask_keeps_float_noise_ties_together():
+    # 수학적으로 같은 값이 부동소수점 잡음(~1e-14)만 다를 때, 경계에 걸리면 함께 포함되거나 함께 빠져야 한다.
+    # (시·도 값을 나눠 쓰던 때 전남 22곳 중 20곳만 대상이 됐던 버그의 회귀 테스트)
+    noise = np.array([0.0, 1e-14, -1e-14, 2e-14])
+    s = pd.Series(np.concatenate([np.full(3, 1.0), 5.0 + noise, np.full(6, 9.0)]))
+    assert s.quantile(0.30) == pytest.approx(5.0)   # 경계가 동률 묶음 위에 놓인다
+    mask = _bottom_30_mask(s)
+    assert mask[:3].all()
+    assert mask[3:7].nunique() == 1
+    assert not mask[7:].any()

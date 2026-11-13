@@ -13,8 +13,8 @@
 #   reference_period  자료의 기준 시점 (파일 내부 표기 기준)
 #   sha256            파일 해시
 #
-# 주의: 의사·전문의(HIRA_INSTITUTIONS)는 2024년 12월 기준. 나머지 HIRA 공급측 자료
-#       (간호사·시설·장비·특수진료실)는 2026년 1분기 기준이고,
+# 주의: 의사·전문의·CT·MRI·수술실·분만실 병상(HIRA_INSTITUTIONS)은 2024년 12월 기준.
+#       나머지 HIRA 공급측 자료(간호사·기관 수)는 2026년 1분기 기준이고,
 #       수요·결과측 자료(인구·미충족의료·관외이용·의료급여)는 2024년 기준이다.
 
 version: 1
@@ -101,7 +101,7 @@ files:
 
   - key: HIRA_SPECIAL_ROOMS
     path: hira/06_special_treatment_rooms.xlsx
-    used: true
+    used: false   # HIRA_INSTITUTIONS(시·군·구 실측)로 대체
     org: 건강보험심사평가원 (HIRA)
     source: 보건의료빅데이터개방시스템 > 의료통계정보
     table_name: 지역별종별_특수진료실현황(단위_실, 개)
@@ -114,7 +114,7 @@ files:
 
   - key: HIRA_EQUIPMENT
     path: hira/07_medical_equipment.xlsx
-    used: true
+    used: false   # HIRA_INSTITUTIONS(시·군·구 실측)로 대체
     org: 건강보험심사평가원 (HIRA)
     source: 보건의료빅데이터개방시스템 > 의료통계정보
     table_name: 의료장비현황(단위_대)
@@ -125,8 +125,9 @@ files:
     unit: 시·도 × 요양기관종별
     sha256: 399624be5941aa90bde13521498781e998c8384e58fece48d1485ac2f33e5641
 
-  # 요양기관 단위 신고 자료 (xlsx 12개 묶음). 1번 병원정보서비스(소재지·의사 수)와
-  # 5번 진료과목정보(과목별 전문의 수)만 읽어 시·군·구로 집계한다.
+  # 요양기관 단위 신고 자료 (xlsx 12개 묶음). 1번 병원정보서비스(소재지·의사 수),
+  # 3번 시설정보(수술실·분만실 병상수), 5번 진료과목정보(과목별 전문의 수),
+  # 7번 의료장비정보(CT·MRI 대수)를 읽어 시·군·구로 집계한다.
   - key: HIRA_INSTITUTIONS
     path: hira_sgg/전국 병의원 및 약국 현황 2024.12.zip
     used: true

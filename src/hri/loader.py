@@ -374,19 +374,34 @@ def load_hira_nurses() -> pd.DataFrame:
     return df
 
 
-def load_hira_equipment() -> pd.DataFrame:
-    df = pd.read_excel(paths.HIRA_EQUIPMENT, sheet_name=0, header=2)
-    df = df.rename(columns={df.columns[0]: "sido", df.columns[1]: "kind"})
-    df["sido"] = normalize_sido(df["sido"])
-    df = df[df["kind"] == "계"].copy().drop(columns=["kind"]).reset_index(drop=True)
-    return df
+# 의료장비정보 장비코드 / 시설정보 열 → 마스터 열
+_EQUIPMENT = {"B108": "eq_전산화단층촬영장치", "B301": "eq_자기공명영상진단기"}   # CT(치과용 콘빔CT 제외), MRI
+_ROOM_COLS = {"수술실병상수": "sr_수술실_병상수", "분만실병상수": "sr_분만실_병상수"}
 
 
-def load_hira_special_rooms() -> pd.DataFrame:
-    df = pd.read_excel(paths.HIRA_SPECIAL_ROOMS, sheet_name=0, header=[2, 3])
-    df.columns = ["_".join([str(x) for x in c if "Unnamed" not in str(x) and str(x) != "nan"]).strip("_") for c in df.columns]
-    first2 = df.columns[:2]
-    df = df.rename(columns={first2[0]: "sido", first2[1]: "kind"})
-    df["sido"] = normalize_sido(df["sido"])
-    df = df[df["kind"] == "계"].copy().drop(columns=["kind"]).reset_index(drop=True)
-    return df
+def load_hira_infrastructure_sgg() -> pd.DataFrame:
+    """CT·MRI 대수와 수술실·분만실 병상수 — 요양기관 단위 신고 자료를 소재지 시·군·구로 집계 (2024.12).
+
+    반환: [sido, sgg, sr_수술실_병상수, sr_분만실_병상수, eq_전산화단층촬영장치, eq_자기공명영상진단기]
+    """
+    fac = _read_institution_sheet(3)   # 시설정보: 기관별 소재지 + 병상수
+    fac["sido"] = normalize_sido(fac["시도코드명"])
+    fac["sgg"] = fac["시군구코드명"]
+    rooms = fac[["sido", "sgg"]].copy()
+    for src, dst in _ROOM_COLS.items():
+        rooms[dst] = pd.to_numeric(fac[src])
+
+    eq = _read_institution_sheet(7)    # 의료장비정보: 기관 × 장비별 대수
+    eq = eq[eq["장비코드"].isin(_EQUIPMENT)].merge(
+        fac[["암호화요양기호", "sido", "sgg"]], on="암호화요양기호", how="left", validate="many_to_one"
+    )
+    if eq["sgg"].isna().any():
+        raise ValueError("장비를 신고한 기관 중 시설정보에 소재지가 없는 곳이 있다")
+    eq["n"] = pd.to_numeric(eq["장비대수"])
+    eq = eq.pivot_table(index=["sido", "sgg"], columns="장비코드", values="n", aggfunc="sum", fill_value=0)
+    eq = eq.rename(columns=_EQUIPMENT)[list(_EQUIPMENT.values())].reset_index()
+
+    out = normalize_sgg(rooms).merge(normalize_sgg(eq), on=["sido", "sgg"], how="left")
+    eq_cols = list(_EQUIPMENT.values())
+    out[eq_cols] = out[eq_cols].fillna(0)   # CT·MRI가 한 대도 없는 시·군·구
+    return out
